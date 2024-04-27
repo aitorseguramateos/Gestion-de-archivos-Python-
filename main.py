@@ -37,6 +37,8 @@ def crear():
                 mensaje = "Se ha creado perfectamente el archivo."
         else:
             print("La ruta no existe.")
+    else:
+        mensaje = "Carácter no válido"
     
     return mensaje
      
@@ -54,23 +56,23 @@ def eliminar():
         ruta = input("Ingrese la ruta para elimiar el directorio (con el directorio que desea eliminar incluido): ")
         
         #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
+        try:
             archivo = os.removedirs(ruta) #eliminación de directorio
             mensaje = "Se ha eliminado perfectamente el directorio."
-        else:
+        except FileNotFoundError:
             mensaje = "El directorio no existe."
 
     elif (opcion == "2"):
         ruta = input("Ingrese la ruta del del archivo con el archivo: ")
         
         #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
+        try:
             archivo = os.remove(ruta) #eliminación del archivo
             mensaje = "El archivo se ha eliminado correctamente."
-        else:
+        except FileNotFoundError:
             mensaje = "El archivo no existe."
     else:
-        mensaje = "La ruta no existe."
+        mensaje = "Carácter no válido"
     
     return mensaje
 
@@ -85,27 +87,29 @@ def mover():
     opcion = input("Elija la opción que desea realizar: ") #elije la opcion del menu
 
     if (opcion == "1"):
-        ruta = input("Elija la ruta del directorio que desea mover.")
+        ruta = input("Elija la ruta del directorio que desea mover:")
         
         #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
-            nueva = input("Elija la ruta donde desea mover el directorio: ")
+        try:
+            nueva = input("Elija la ruta donde desea mover el directorio con el directorio movido incluido: ")
             archvo = os.replace(ruta,nueva) #cambiar la ubicación del directorio
             mensaje = "Se ha movido correctamene el archivo."
 
-        else:
+        except FileNotFoundError:
             mensaje = "La ruta no existe."
 
     elif (opcion == "2"):
-        ruta = input("Elija la ruta del archivo que desea mover.")
+        ruta = input("Elija la ruta del archivo que desea mover:")
         
         #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
-            nueva = input("Elija la ruta donde desea mover el archivo: ")
+        try:
+            nueva = input("Elija la ruta donde desea mover el archivo con el archivo movido incluido: ")
             archivo = os.replace(ruta,nueva) #cambiar la ubicación del archivo
             mensaje = "Se ha movido correctamente el archivo: "
-        else:
+        except FileNotFoundError:
             mensaje = "La ruta no exsiste."
+    else:
+        mensaje = "Carácter no válido"
 
     return mensaje
     
@@ -123,23 +127,25 @@ def renombrar():
         ruta = input("Escriba la ruta del directorio que desea renombrar: ")
         
         #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
+        try:
             nueva = input("Escriba la ruta del directorio que va a substituir el nombre del otro directorio: ")
             archivo = os.rename(ruta,nueva) #renombrar un direcctoiro
             mensaje = "Se ha renombrado correctamente el directorio."
-        else:
+        except FileNotFoundError:
             mensaje = "La ruta del directorio no existe."
 
     elif (opcion == "2"):
         ruta = input("Elija la ruta del archivo que desea renombrar: ")
         
         #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
+        try:
             nueva = input("Escriba la ruta del archivo que desea substituir el otro archivo: ")
             archivo = os.rename(ruta,nueva) #renombrar un archivo
             mensaje = "Se ha renombrado correctamente el archivo."
-        else:
+        except FileNotFoundError:
             mensaje = "La ruta no existe."
+    else:
+        mensaje = "Carácter no válido"
     
     return mensaje
 
@@ -149,7 +155,7 @@ def encriptar():
     ruta = input("Introduzca la ruta del archivo que quiere encriptar: ")
     
     #comprovación de si existe la ruta elegida por el usuario
-    if os.path.exists(ruta):
+    try:
         with open(ruta, "rb") as archivo:
             leer = archivo.read()
             codificacion = base64.b64encode(leer) #codificar el archivo
@@ -159,7 +165,7 @@ def encriptar():
 
         mensaje = "Archivo encriptado correctamente."
         
-    else:
+    except FileNotFoundError:
         mensaje = "La ruta no existe."
 
     return mensaje
@@ -170,7 +176,7 @@ def desencriptar():
     ruta = input("Introduzca la ruta del archivo que quiere encriptar: ")
 
     #comprovación de si existe la ruta elegida por el usuario
-    if os.path.exists(ruta):
+    try:
         with open(ruta, "rb") as archivo:
             leer = archivo.read()
             codificacion = base64.b64decode(leer) # decodificar el archivo
@@ -180,11 +186,28 @@ def desencriptar():
 
         mensaje = "Archivo desencriptado correctamente."
         
-    else:
+    except FileNotFoundError:
         mensaje = "La ruta no existe."
 
     return mensaje
 
+def introducirtexto():
+    os.system("cls") #limpiar consola
+    ruta = input("Introduzca la ruta del archivo que quiere escribir: ")
+    
+    #comprovación de si existe la ruta elegida por el usuario
+    try:
+        with open(ruta, 'w') as file:
+            escritura = input("Introduzca el texto que desea escribir: ")
+            file.write(escritura) #reescribir el contenido del archivo para que solo se muestre que este cifrado
+
+        mensaje = "Archivo redactado correctamente."
+        
+    except FileNotFoundError:
+        mensaje = "El archivo no existe."
+        
+    return mensaje
+    
 #funcion esqueleto del programa
 def main():
     os.system("cls") #limpiar consola
@@ -203,6 +226,7 @@ def main():
         print("4.- Renombrar un directorio / archivo.")
         print("5.- Encriptar el contenido de un archivo.")
         print("6.- Decodificar el contenido de un archivo.")
+        print("7.- Escribir en un archivo.")
         opc = input("Elija una acción a realizar: ") #elije la opcion del menu
         
     # condiciones que sirven para seleccionar la opción del menu
@@ -218,8 +242,12 @@ def main():
             mensaje = encriptar()
         elif (opc == "6"):
            mensaje =  desencriptar()
+        elif (opc == "7"):
+            mensaje = introducirtexto()
         elif(opc == "0"):
             break
+        else:
+            mensaje = "Carácter no válido"
         
         os.system("cls") #limpiamos consola
 
