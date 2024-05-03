@@ -13,33 +13,35 @@ def crear():
     opcion = input("Elija la opción que desear realizar: ") #elije la opcion del menu
     
     if (opcion == "1"):
-        ruta = input("Ingrese la ruta para gruardar el directorio (con la carpeta añadida ya): ")
-        
-        #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
-            mensaje = "El directorio ya existe."
-        else:
+        try:
+            ruta = input("Ingrese la ruta para gruardar el directorio (con la carpeta añadida ya): ")
             archivo = os.mkdir(ruta) #creación de la carpeta
             mensaje = "Se ha creado perfectamente el archivo."
+        except FileNotFoundError:
+            mensaje = "No se ha encontrado la ruta."
+        except IOError:
+            mensaje = "Ha habido un error en la creación."
         
     elif (opcion == "2"):
-        ruta = input("Ingrese la ruta para gruardar el archivo: ")
-        
-        #comprovación de si existe la ruta elegida por el usuario
-        if (os.path.exists(ruta)):
+        try:
+            ruta = input("Ingrese la ruta para gruardar el archivo: ")        
             nombre = input("Elija el nombre del archivo que desea crear, añada extensión correspondiente: ")
-            
-            if (os.path.exists(nombre)):
-                print("El archivo ya existe.")
+            if (os.path.exists(os.path.join(ruta,nombre))):
+                mensaje = "El archivo ya existe."
+            elif (os.path.exists(ruta)):
+                mensaje = "Ya existe el archivo."
             else:
                 archivo = open(os.path.join(ruta,nombre), 'w') #creación de un archivo
                 archivo.close() #cerramos el archivo
-                mensaje = "Se ha creado perfectamente el archivo."
-        else:
-            print("La ruta no existe.")
+                
+                mensaje = "Se ha creado perfectamente el archivo en: " + ruta
+            
+        except Exception as Error:
+            mensaje = "El error que ha sucedidio es "+ Error
     else:
-        mensaje = "Carácter no válido"
+        mensaje = "Carácter no válido."
     
+    input("Pulsa una tecla para continuar ...")
     return mensaje
      
 #funcion para eliminar archivos o directorios   
@@ -74,6 +76,7 @@ def eliminar():
     else:
         mensaje = "Carácter no válido"
     
+    input("Pulsa una tecla para continuar ...")
     return mensaje
 
 #funcion para mover directorios o archivos
@@ -111,6 +114,7 @@ def mover():
     else:
         mensaje = "Carácter no válido"
 
+    input("Pulsa una tecla para continuar ...")
     return mensaje
     
 #funcion para renombrar archivos o directorios
@@ -166,17 +170,18 @@ def encriptar():
         mensaje = "Archivo encriptado correctamente."
         
     except FileNotFoundError:
-        mensaje = "La ruta no existe."
-
+        mensaje = "El archivo: " + ruta + " no existe."
+        
+    input("Pulsa una tecla para continuar ...")
     return mensaje
 
 #función que desencripta el contenido del archivo
 def desencriptar():
     os.system("cls") #limpiar consola
-    ruta = input("Introduzca la ruta del archivo que quiere encriptar: ")
 
-    #comprovación de si existe la ruta elegida por el usuario
     try:
+        ruta = input("Introduzca la ruta del archivo que quiere encriptar: ")
+    #comprovación de si existe la ruta elegida por el usuario
         with open(ruta, "rb") as archivo:
             leer = archivo.read()
             codificacion = base64.b64decode(leer) # decodificar el archivo
@@ -187,10 +192,11 @@ def desencriptar():
         mensaje = "Archivo desencriptado correctamente."
         
     except FileNotFoundError:
-        mensaje = "La ruta no existe."
+        mensaje = "El fichero: " + ruta + " no existe"
 
     return mensaje
 
+#funcion para escribir en un archivo
 def introducirtexto():
     os.system("cls") #limpiar consola
     ruta = input("Introduzca la ruta del archivo que quiere escribir: ")
@@ -201,11 +207,31 @@ def introducirtexto():
             escritura = input("Introduzca el texto que desea escribir: ")
             file.write(escritura) #reescribir el contenido del archivo para que solo se muestre que este cifrado
 
-        mensaje = "Archivo redactado correctamente."
+        mensaje = "Archivo redactado correctamente en: " + ruta
         
     except FileNotFoundError:
-        mensaje = "El archivo no existe."
+        mensaje = "No existe: " + ruta
+    except Exception as error:
+        mensaje = "Se ha producido el siguiente error: " + error + "en el fichero: " + ruta
         
+    input("Pulsa una tecla para continuar ...")  
+    return mensaje
+
+#funcion para printar el contenido
+def printar():
+    os.system("cls") #limpiar consola
+    ruta = input("Introduzca la ruta del archivo que quiere mostrar: ")
+    
+    try:
+        with open(ruta, "r") as archivo:
+            leer = archivo.read()
+            anuncio = "El contendio del fichero es: \n"
+            mensaje = anuncio + leer
+    except FileNotFoundError:
+        mensaje = "El archivo: " + ruta + " no existe. Intentelo de nuevo."
+    except IOError:
+        mensaje = "Error en el proceso de lectura del fichero: " +  ruta + " intentelo de nuevo."
+    input("Pulsa una tecla para continuar ...")
     return mensaje
     
 #funcion esqueleto del programa
@@ -227,6 +253,7 @@ def main():
         print("5.- Encriptar el contenido de un archivo.")
         print("6.- Decodificar el contenido de un archivo.")
         print("7.- Escribir en un archivo.")
+        print("8.- Mostrar contenido archivo.")
         opc = input("Elija una acción a realizar: ") #elije la opcion del menu
         
     # condiciones que sirven para seleccionar la opción del menu
@@ -244,6 +271,8 @@ def main():
            mensaje =  desencriptar()
         elif (opc == "7"):
             mensaje = introducirtexto()
+        elif (opc == "8"):
+            mensaje = printar()
         elif(opc == "0"):
             break
         else:
@@ -252,4 +281,4 @@ def main():
         os.system("cls") #limpiamos consola
 
 main() #llamada al esqueleto.
-print("Gracias por usar el servicio!")
+print("Gracias por usar el servicio! HASTA PRONTO!")
